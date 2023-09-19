@@ -5,7 +5,7 @@ import seaborn as sns
 from scipy import stats
 from sklearn import svm
 from sklearn.ensemble import IsolationForest
-
+from scipy.stats import chi2_contingency
 
 def draw_boxplots(numeric_columns: list, df : pd.DataFrame):
     """
@@ -367,3 +367,34 @@ def draw_barplot(df, column):
 
     # Display the bar plot
     plt.show()
+
+def chi_squared_tests(df, categorical_columns):
+    """
+    Perform χ² tests between pairs of categorical variables.
+
+    Parameters:
+        df (pd.DataFrame): The input DataFrame containing the categorical variables.
+        categorical_columns (list): List of column names containing categorical variables.
+
+    Returns:
+        None (prints test results).
+    """
+
+    # Generate unique pairs of categorical variables
+    pairs_to_test = []
+    for i in range(len(categorical_columns)):
+        for j in range(i + 1, len(categorical_columns)):
+            pairs_to_test.append((categorical_columns[i], categorical_columns[j]))
+
+    # Perform χ² test for each pair of variables
+    for pair in pairs_to_test:
+        contingency_table = pd.crosstab(df[pair[0]], df[pair[1]])
+        chi2_stat, p_val, dof, expected = chi2_contingency(contingency_table)
+
+        print(f"Test du χ² entre {pair[0]} et {pair[1]}:")
+        print(f"Statistique de test du χ² : {chi2_stat}")
+        print(f"Valeur de p : {p_val}")
+        print(f"Degrés de liberté : {dof}")
+        print("Fréquences attendues :")
+        print(expected)
+        print("\n")
